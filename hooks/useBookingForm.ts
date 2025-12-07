@@ -4,6 +4,8 @@ import { SERVICES } from '../constants';
 
 interface FormState {
   name: string;
+  email: string;
+  phone: string;
   appliance: string;
   issue: string;
 }
@@ -11,6 +13,8 @@ interface FormState {
 export const useBookingForm = () => {
   const [formState, setFormState] = useState<FormState>({
     name: '',
+    email: '',
+    phone: '',
     appliance: SERVICES[0]?.title || '',
     issue: '',
   });
@@ -24,10 +28,16 @@ export const useBookingForm = () => {
 
   const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { name, appliance, issue } = formState;
+    const { name, email, phone, appliance, issue } = formState;
 
     if (!name || !appliance || !issue) {
-      setError('Please fill out all fields.');
+      setError('Please fill out all required fields.');
+      return;
+    }
+    
+    // Basic email validation if provided
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Please enter a valid email address.');
       return;
     }
     
@@ -36,7 +46,7 @@ export const useBookingForm = () => {
     setConfirmation('');
 
     try {
-      const result = await generateBookingConfirmation(name, appliance, issue);
+      const result = await generateBookingConfirmation(name, email, phone, appliance, issue);
       setConfirmation(result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Sorry, something went wrong. Please try again later.';

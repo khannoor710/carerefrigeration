@@ -4,6 +4,12 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { GoogleGenAI } from '@google/genai';
+import dotenv from 'dotenv';
+import { sendBookingEmails } from './services/emailService.js';
+
+// Load environment variables from .env.local
+dotenv.config({ path: '.env.local' });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,6 +20,13 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the Vite build (in production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'dist')));
+}
+
+// Serve gallery images
 app.use('/gallery', express.static(path.join(__dirname, 'public/gallery')));
 
 // Ensure gallery directory exists
@@ -71,6 +84,132 @@ const saveGalleryMetadata = (metadata) => {
 };
 
 // API Routes
+
+// AI Booking Confirmation endpoint
+app.post('/api/ai/booking-confirmation', async (req, res) => {
+  try {
+    const { name, appliance, issue, email, phone } = req.body;
+
+    // Validate input
+    if (!name || !appliance || !issue) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: name, appliance, and issue are required' 
+      });
+    }
+
+    // Generate booking reference
+    const bookingRef = 'CR-' + Math.floor(100000 + Math.random() * 900000);
+
+    // Check if API key is configured
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('GEMINI_API_KEY not configured');
+      return res.status(500).json({ 
+        error: 'AI service not configured. Please contact support.' 
+      });
+    }
+
+    // Initialize Gemini AI
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    const prompt = `
+      You are a friendly and professional customer service agent for an appliance repair company called "Care Refrigeration".
+      A customer has just submitted a service request form. Your task is to generate a warm, reassuring, and professional confirmation message.
+
+      Customer Details:
+      - Name: ${name}
+      - Appliance: ${appliance}
+      - Issue Description: ${issue}
+
+      Instructions for the response:
+      1. Address the customer by their name.
+      2. Confirm receipt of their service request for the specified appliance.
+      3. Reassure them that a technician will be in touch shortly (within the next 2-3 business hours) to schedule a specific appointment time.
+      4. Use this booking reference number: ${bookingRef}
+      5. Keep the tone positive and professional.
+      6. Do not ask any questions.
+      7. The response should be a single paragraph.
+    `;
+
+    // Call Gemini API
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+    });
+
+    const confirmationText = response.text;
+
+    if (!confirmationText || confirmationText.trim().length === 0) {
+      throw new Error('Received empty response from AI service');
+    }
+
+    // Send emails (customer + business notification)
+    const emailResults = await sendBookingEmails({
+      name,
+      email,
+      phone,
+      appliance,
+      issue,
+      confirmationMessage: confirmationText,
+      bookingRef,
+    });
+
+    console.log('📧 Email results:', emailResults);
+
+    res.json({ 
+      success: true, 
+      confirmation: confirmationText,
+      bookingRef,
+      emailSent: {
+        customer: emailResults.customer?.success || false,
+        business: emailResults.business?.success || false,
+      }
+    });
+
+  } catch (error) {
+    console.error('Error generating booking confirmation:', error);
+    
+    // Provide fallback message
+    const { name, appliance, email, phone } = req.body;
+    const bookingRef = 'CR-' + Math.floor(100000 + Math.random() * 900000);
+    
+    const fallbackMessage = `Dear ${name},
+
+Thank you for contacting Care Refrigeration! We have received your service request for ${appliance} repair.
+
+Your booking reference is: ${bookingRef}
+
+Our technical team has been notified and will contact you within 2-3 business hours to schedule a convenient appointment time.
+
+If you need immediate assistance, please call us directly at +91 9819 124 194.
+
+Best regards,
+Care Refrigeration Team`;
+
+    // Still try to send emails even with fallback message
+    try {
+      const emailResults = await sendBookingEmails({
+        name,
+        email,
+        phone,
+        appliance,
+        issue,
+        confirmationMessage: fallbackMessage,
+        bookingRef,
+      });
+      
+      console.log('📧 Fallback email results:', emailResults);
+    } catch (emailError) {
+      console.error('Error sending fallback emails:', emailError);
+    }
+
+    res.json({ 
+      success: true, 
+      confirmation: fallbackMessage,
+      bookingRef,
+      usedFallback: true 
+    });
+  }
+});
 
 // Get all gallery images
 app.get('/api/gallery', (req, res) => {
@@ -213,6 +352,13 @@ app.post('/api/gallery/reset', (req, res) => {
     res.status(500).json({ error: 'Failed to reset gallery' });
   }
 });
+
+// Catch-all route to serve index.html for client-side routing (must be last)
+if (process.env.NODE_ENV === 'production') {
+  app.get(/^\/(?!api|gallery).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
+}
 
 // Start server
 app.listen(PORT, () => {

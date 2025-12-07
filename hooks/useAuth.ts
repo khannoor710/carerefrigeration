@@ -4,10 +4,11 @@ import { AdminSession } from '../types';
 const ADMIN_SESSION_KEY = 'admin_session';
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-// IMPORTANT: In production, use environment variables and secure backend authentication
+// IMPORTANT: This is basic client-side protection only, not security-critical
+// For real security, implement proper backend authentication
 const ADMIN_CREDENTIALS = {
-  username: process.env.ADMIN_USERNAME || 'admin',
-  password: process.env.ADMIN_PASSWORD || 'CareRefrig2024!',
+  username: 'admin',
+  password: 'CareRefrig2024!',
 };
 
 /**

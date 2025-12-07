@@ -26,20 +26,55 @@ const BookingForm: React.FC = () => {
           {!confirmation ? (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700">Full Name</label>
+                <label htmlFor="name" className="block text-sm font-medium text-slate-700">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   id="name"
+                  required
                   value={formState.name}
                   onChange={(e) => setFormField('name', e.target.value)}
                   className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary"
                   placeholder="John Doe"
                 />
               </div>
+
               <div>
-                <label htmlFor="appliance" className="block text-sm font-medium text-slate-700">Appliance Type</label>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                  Email Address <span className="text-slate-400">(Optional - for confirmation email)</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formState.email}
+                  onChange={(e) => setFormField('email', e.target.value)}
+                  className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary"
+                  placeholder="john@example.com"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-slate-700">
+                  Phone Number <span className="text-slate-400">(Optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  value={formState.phone}
+                  onChange={(e) => setFormField('phone', e.target.value)}
+                  className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary"
+                  placeholder="+91 98765 43210"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="appliance" className="block text-sm font-medium text-slate-700">
+                  Appliance Type <span className="text-red-500">*</span>
+                </label>
                 <select
                   id="appliance"
+                  required
                   value={formState.appliance}
                   onChange={(e) => setFormField('appliance', e.target.value)}
                   className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary bg-white"
@@ -50,10 +85,13 @@ const BookingForm: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="issue" className="block text-sm font-medium text-slate-700">Describe the Issue</label>
+                <label htmlFor="issue" className="block text-sm font-medium text-slate-700">
+                  Describe the Issue <span className="text-red-500">*</span>
+                </label>
                 <textarea
                   id="issue"
                   rows={4}
+                  required
                   value={formState.issue}
                   onChange={(e) => setFormField('issue', e.target.value)}
                   className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary"

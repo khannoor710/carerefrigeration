@@ -13,9 +13,9 @@ This guide explains how to deploy the updated Care Refrigeration website with th
 
 | Platform | Why Choose It | Deploy Time | Custom Domain |
 |----------|---------------|-------------|---------------|
-| **🥇 Cyclic** | Persistent storage, no cold starts, 10GB free | 5 minutes | ✅ FREE |
-| **🥈 Render** | Very reliable, automatic HTTPS, great docs | 5 minutes | ✅ FREE |
-| **🥉 Railway** | Beautiful UI, $5/month credit, easy setup | 3 minutes | ✅ FREE |
+| **🥇 Railway** | Persistent storage, $5/month credit, beautiful UI | 3 minutes | ✅ FREE |
+| **🥈 Render** | Very reliable, automatic HTTPS, great docs (needs Cloudinary) | 5 minutes | ✅ FREE |
+| **🥉 Fly.io** | Global edge, persistent volumes, 3 VMs free | 5 minutes | ✅ FREE |
 
 ### 🌐 Custom Domain Support (carerefrigeration.com)
 
@@ -34,63 +34,82 @@ This guide explains how to deploy the updated Care Refrigeration website with th
 | **Heroku** | ✅ Free | ✅ Auto | ⭐ Easy |
 
 **Recommended for carerefrigeration.com:**
-1. **Cyclic** - Easiest setup, persistent storage
-2. **Render** - Most reliable, great documentation
-3. **Railway** - Beautiful interface, simple DNS setup
+1. **Railway** - Easiest setup, persistent storage, $5/month free credit
+2. **Render + Cloudinary** - Most reliable, great documentation
+3. **Fly.io** - Global edge network, persistent volumes
 
 ---
 
-## 🚀 Quick Start: Deploy to Cyclic (Recommended FREE Option)
+## 🚀 Quick Start: Deploy to Railway (Recommended FREE Option)
 
-**Why Cyclic?**
-- ✅ 100% Free forever
-- ✅ No cold starts (always-on)
-- ✅ 10GB storage for images
-- ✅ Unlimited apps
-- ✅ No credit card required
-- ✅ Perfect for this full-stack app
+**Why Railway?**
+- ✅ **$5/month free credit** (renews monthly, ~500 hours runtime)
+- ✅ **Persistent storage** for your gallery images
+- ✅ **Beautiful UI** - easiest deployment experience
+- ✅ **No credit card required** for first $5
+- ✅ **Auto-deploy** from GitHub
+- ✅ **Custom domain support** (free)
+- ✅ **Automatic HTTPS**
 
 **Steps:**
 
-1. **Push to GitHub** (if not already done):
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/yourusername/your-repo.git
-   git push -u origin main
-   ```
+1. **Your code is already on GitHub** ✅
+   - Repository: https://github.com/khannoor710/carerefrigeration
 
-2. **Go to** [app.cyclic.sh](https://app.cyclic.sh)
+2. **Go to** [railway.app](https://railway.app)
 
 3. **Sign in with GitHub**
 
-4. **Click "Link Your Own"** → Select your repository
+4. **Create New Project**:
+   - Click "New Project" 
+   - Select "Deploy from GitHub repo"
+   - Choose `khannoor710/carerefrigeration`
 
-5. **Cyclic Auto-Configures** - Detects Node.js automatically
+5. **Railway Auto-Configures**:
+   - Detects Node.js automatically
+   - Uses `npm install` to build
+   - Runs `npm start` (make sure this runs `node server.js`)
 
 6. **Add Environment Variables**:
-   - Click "Variables" tab
-   - Add:
-     - `GEMINI_API_KEY` = your_api_key
-     - `ADMIN_USERNAME` = admin
-     - `ADMIN_PASSWORD` = your_secure_password
-     - `NODE_ENV` = production
+   - In Railway dashboard → Click your service → "Variables" tab
+   - Add these variables:
+     ```
+     GEMINI_API_KEY=your_actual_api_key
+     ADMIN_USERNAME=admin
+     ADMIN_PASSWORD=your_secure_password
+     NODE_ENV=production
+     PORT=3001
+     ```
 
-7. **Deploy** - Click "Deploy" button
+7. **Deploy**:
+   - Railway automatically deploys
+   - Get URL like `your-app.up.railway.app`
 
-8. **Your app is live!** - Get URL like `your-app.cyclic.app`
+8. **Access Your Site**:
+   - Main site: `https://your-app.up.railway.app`
+   - Admin panel: `https://your-app.up.railway.app/admin`
 
-9. **Access**:
-   - Main site: `https://your-app.cyclic.app`
-   - Admin panel: `https://your-app.cyclic.app/admin`
+9. **Enable Persistent Storage** (Important for images!):
+   - In Railway dashboard → Your service → "Settings"
+   - Scroll to "Volumes"
+   - Click "New Volume"
+   - Mount path: `/app/public/gallery`
+   - This ensures images persist across deployments!
 
 **That's it!** Your app is deployed with:
 - ✅ Automatic HTTPS
 - ✅ File uploads working
-- ✅ Gallery images persisted
-- ✅ No cold starts
+- ✅ Gallery images persisted (with volume)
+- ✅ Auto-redeploy on GitHub push
+
+### 💰 Railway Free Tier Details
+- $5 credit/month (renews monthly)
+- ~500 hours of runtime (~16 hours/day)
+- 100GB bandwidth/month
+- 8GB RAM, 8 vCPU
+- Persistent storage via volumes
+
+**Cost Management Tip**: Your app will likely stay within the $5/month free credit. Railway charges only for actual usage (~$0.01/hour when running).
 
 ---
 
@@ -100,36 +119,43 @@ This guide explains how to deploy the updated Care Refrigeration website with th
 
 Since you have **carerefrigeration.com**, here are your best FREE options:
 
-#### Option A: Cyclic (Recommended for Your Domain)
+#### Option A: Railway (Recommended for Your Domain)
 
-**Why?** Persistent storage + Custom domain + No cold starts
+**Why?** Persistent storage + Custom domain + Beautiful UI + $5/month free credit
 
-1. **Deploy to Cyclic** (follow steps above)
+1. **Deploy to Railway** (follow steps above)
 
 2. **Add Custom Domain**:
-   - In Cyclic dashboard → Go to "Domains" tab
-   - Click "Add Custom Domain"
+   - In Railway dashboard → Your service → "Settings" → "Domains"
+   - Click "Custom Domain"
    - Enter: `carerefrigeration.com`
    - Also add: `www.carerefrigeration.com`
 
 3. **Configure DNS** at your domain registrar (GoDaddy, Namecheap, etc.):
    
-   Add these DNS records:
+   Railway will provide you with DNS records. Typically:
    ```
-   Type: A
+   Type: CNAME
    Name: @
-   Value: [IP provided by Cyclic]
+   Value: [provided by Railway, e.g., your-app.up.railway.app]
    TTL: 3600
    
    Type: CNAME
    Name: www
-   Value: [URL provided by Cyclic]
+   Value: [provided by Railway]
    TTL: 3600
+   ```
+   
+   *Note: If your registrar doesn't support CNAME for root domain (@):*
+   ```
+   Type: A
+   Name: @
+   Value: [IP provided by Railway]
    ```
 
 4. **Wait 5-60 minutes** for DNS propagation
 
-5. **SSL Certificate** - Cyclic auto-generates (5-10 minutes after DNS)
+5. **SSL Certificate** - Railway auto-generates (automatic with custom domain)
 
 6. **Done!** Visit `https://carerefrigeration.com`
 
@@ -190,7 +216,7 @@ Since you have **carerefrigeration.com**, here are your best FREE options:
 
 4. **SSL** - Automatically provisioned
 
-#### Option D: Vercel (Frontend) + Railway/Cyclic (Backend)
+#### Option D: Vercel (Frontend) + Railway (Backend)
 
 **Best for Maximum Performance**
 
@@ -199,7 +225,7 @@ Since you have **carerefrigeration.com**, here are your best FREE options:
    - Add `carerefrigeration.com`
    - Follow DNS instructions (very simple)
 
-2. **Deploy Backend to Railway/Cyclic**:
+2. **Deploy Backend to Railway**:
    - Can use subdomain: `api.carerefrigeration.com`
    - Or keep on default platform URL
 
@@ -220,10 +246,10 @@ Since you have **carerefrigeration.com**, here are your best FREE options:
    Name: www
    Value: cname.vercel-dns.com
    
-   # For API backend (Railway/Cyclic)
+   # For API backend (Railway)
    Type: CNAME
    Name: api
-   Value: [your-backend-url]
+   Value: [your-railway-app.up.railway.app]
    ```
 
 ### 📋 DNS Configuration Cheat Sheet
@@ -246,20 +272,20 @@ Since you have **carerefrigeration.com**, here are your best FREE options:
 
 ### 🎯 Recommended Setup for carerefrigeration.com
 
-**Best Option: Cyclic (Single Platform)**
+**Best Option: Railway (Single Platform)**
 ```
-carerefrigeration.com → Cyclic full-stack app
-└── Frontend + Backend + File Storage
-└── 100% free, persistent storage
-└── No cold starts
+carerefrigeration.com → Railway full-stack app
+└── Frontend + Backend + File Storage (with Volume)
+└── $5/month free credit, persistent storage
+└── Beautiful UI, easy deployment
 └── Automatic HTTPS
 ```
 
 **Alternative: Split Stack (Better Performance)**
 ```
 carerefrigeration.com → Vercel (frontend)
-api.carerefrigeration.com → Cyclic/Railway (backend)
-images → Cloudinary (if needed)
+api.carerefrigeration.com → Railway (backend)
+images → Railway Volume or Cloudinary
 └── Frontend: 100+ edge locations worldwide
 └── Backend: Persistent storage for uploads
 └── Images: CDN delivery
@@ -376,12 +402,11 @@ npm run dev
 
 | Platform | Best For | Free Tier | Cold Starts | Difficulty | Recommendation |
 |----------|----------|-----------|-------------|------------|----------------|
-| **Render** | Full-stack apps | 750hrs/month | Yes (~30s) | ⭐ Easy | ⭐⭐⭐⭐⭐ Best Overall |
-| **Cyclic** | Node.js apps | Unlimited | No | ⭐ Easy | ⭐⭐⭐⭐⭐ Best Performance |
-| **Railway** | Quick deploys | $5/month credit | Minimal | ⭐ Easy | ⭐⭐⭐⭐ Great for testing |
+| **Railway** | Full-stack apps | $5/month credit | Minimal | ⭐ Easy | ⭐⭐⭐⭐⭐ Best Overall |
+| **Render** | Full-stack apps | 750hrs/month | Yes (~30s) | ⭐ Easy | ⭐⭐⭐⭐⭐ Best w/ Cloudinary |
+| **Fly.io** | Global apps | 3 VMs free | No | ⭐⭐⭐ Hard | ⭐⭐⭐⭐ Advanced users |
 | **Netlify + Render** | Static + API | 100GB bandwidth | Backend only | ⭐⭐ Medium | ⭐⭐⭐⭐ Good separation |
 | **Vercel + Railway** | Modern stack | Generous | Backend only | ⭐⭐ Medium | ⭐⭐⭐⭐ Enterprise-like |
-| **Fly.io** | Global apps | 3 VMs free | No | ⭐⭐⭐ Hard | ⭐⭐⭐ Advanced users |
 | **Glitch** | Prototyping | 1000hrs/month | Yes (~5min) | ⭐ Easy | ⭐⭐⭐ Learning projects |
 | **Koyeb** | Edge computing | 1 service | Minimal | ⭐⭐ Medium | ⭐⭐⭐ Good alternative |
 | **Heroku** | Classic PaaS | 550hrs/month | Yes | ⭐⭐ Medium | ⭐⭐ Requires credit card |
@@ -389,22 +414,22 @@ npm run dev
 ### 🏆 Recommended Options by Use Case
 
 **🥇 Best for Production (Free)**
-- **Cyclic.sh** - No cold starts, unlimited apps, perfect for this project
+- **Railway** - Persistent storage, $5/month credit, beautiful UI
 
 **🥈 Best for Reliability**
-- **Render** - Industry standard, automatic HTTPS, great free tier
+- **Render + Cloudinary** - Industry standard, automatic HTTPS, great free tier
 
 **🥉 Best for Beginners**
-- **Railway** - Beautiful UI, one-click deploy, $5/month free credit
+- **Railway** - Beautiful UI, one-click deploy, easiest setup
 
 **💰 Best Value**
-- **Netlify (Frontend) + Cyclic (Backend)** - Combine best of both worlds
+- **Netlify (Frontend) + Railway (Backend)** - Combine best of both worlds
 
 **🌍 Best for Global Users**
 - **Fly.io** - Edge network, runs close to users worldwide
 
 **⚡ Fastest Setup**
-- **Glitch** - Deploy in 2 minutes, no CLI needed
+- **Railway** - Deploy in 3 minutes from GitHub
 
 ### Option 1: Deploy to Heroku
 
@@ -788,9 +813,8 @@ Images are stored in:
 
 These platforms keep uploaded images permanently:
 
-- ✅ **Cyclic** - 10GB persistent storage
+- ✅ **Railway** - Persistent volumes, easy setup
 - ✅ **Fly.io** - Persistent volumes (3GB free)
-- ✅ **Railway** - Persistent disk storage
 - ✅ **Koyeb** - 2GB persistent disk
 - ✅ **DigitalOcean** - Persistent storage included
 
@@ -856,11 +880,11 @@ If using Render/Heroku, you need external storage:
 
 ### 🎯 Best Deployment Strategy by Priority
 
-**Priority: Simplicity + Free Forever**
-→ **Cyclic** (persistent storage, no cold starts)
+**Priority: Simplicity + Free + Persistent Storage**
+→ **Railway** with Volume (persistent storage, beautiful UI)
 
 **Priority: Image Permanence**
-→ **Cyclic** or **Railway** (both have persistent disks)
+→ **Railway** or **Fly.io** (both have persistent volumes)
 
 **Priority: Maximum Uptime**
 → **Fly.io** with persistent volumes

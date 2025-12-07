@@ -1,10 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
-
-/**
- * Gemini AI model identifier
- */
-const GEMINI_MODEL = "gemini-2.5-flash" as const;
-
 /**
  * Custom error for API-related issues
  */
@@ -16,21 +9,24 @@ export class GeminiServiceError extends Error {
 }
 
 /**
- * Validates that the API key is configured
- * @throws {GeminiServiceError} If API key is not set
+ * Get the API base URL based on environment
  */
-function validateApiKey(): void {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new GeminiServiceError(
-      "GEMINI_API_KEY environment variable not set. Please configure your API key in .env.local"
-    );
+function getApiBaseUrl(): string {
+  // In development, use localhost backend
+  if (import.meta.env.DEV) {
+    return 'http://localhost:3001';
   }
+  // In production, use same origin (Railway serves both frontend and backend)
+  return '';
 }
 
 /**
  * Generates a personalized booking confirmation message using Gemini AI
+ * Now calls the backend API instead of Gemini directly for security
  * 
  * @param name - Customer's full name
+ * @param email - Customer's email address
+ * @param phone - Customer's phone number
  * @param appliance - Type of appliance needing repair
  * @param issue - Description of the issue
  * @returns Promise resolving to the confirmation message
@@ -38,47 +34,36 @@ function validateApiKey(): void {
  */
 export async function generateBookingConfirmation(
   name: string,
+  email: string,
+  phone: string,
   appliance: string,
   issue: string
 ): Promise<string> {
-  validateApiKey();
-
-  const apiKey = process.env.GEMINI_API_KEY as string;
+  const apiUrl = `${getApiBaseUrl()}/api/ai/booking-confirmation`;
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
-
-    const prompt = `
-      You are a friendly and professional customer service agent for an appliance repair company called "Care Refrigeration".
-      A customer has just submitted a service request form. Your task is to generate a warm, reassuring, and professional confirmation message.
-
-      Customer Details:
-      - Name: ${name}
-      - Appliance: ${appliance}
-      - Issue Description: ${issue}
-
-      Instructions for the response:
-      1. Address the customer by their name.
-      2. Confirm receipt of their service request for the specified appliance.
-      3. Reassure them that a technician will be in touch shortly (within the next 2-3 business hours) to schedule a specific appointment time.
-      4. Provide a unique, fictional booking reference number (e.g., CR-XXXXXX).
-      5. Keep the tone positive and professional.
-      6. Do not ask any questions.
-      7. The response should be a single paragraph.
-    `;
-
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: prompt,
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, phone, appliance, issue }),
     });
 
-    const confirmationText = response.text;
-    
-    if (!confirmationText || confirmationText.trim().length === 0) {
-      throw new GeminiServiceError('Received empty response from AI service');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new GeminiServiceError(
+        errorData.error || `API request failed with status ${response.status}`
+      );
     }
 
-    return confirmationText;
+    const data = await response.json();
+    
+    if (!data.success || !data.confirmation) {
+      throw new GeminiServiceError('Invalid response from API');
+    }
+
+    return data.confirmation;
   } catch (error) {
     console.error('Error generating confirmation:', error);
     
@@ -86,26 +71,10 @@ export async function generateBookingConfirmation(
       throw error;
     }
     
-    // Provide a graceful fallback message for users
-    return `Dear ${name},
-
-Thank you for contacting Care Refrigeration! We have received your service request for ${appliance} repair.
-
-Your booking reference is: CR-${generateBookingReference()}
-
-Our technical team has been notified and will contact you within 2-3 business hours to schedule a convenient appointment time.
-
-If you need immediate assistance, please call us directly at +91 9819 124 194.
-
-Best regards,
-Care Refrigeration Team`;
+    // Network or fetch errors - provide fallback
+    throw new GeminiServiceError(
+      'Unable to connect to booking service. Please try again or call us directly.',
+      error
+    );
   }
-}
-
-/**
- * Generates a random booking reference number
- * @returns 6-digit booking reference
- */
-function generateBookingReference(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
 }
