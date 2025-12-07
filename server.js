@@ -4,7 +4,6 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import { sendBookingEmails } from './services/emailService.js';
 
@@ -85,7 +84,7 @@ const saveGalleryMetadata = (metadata) => {
 
 // API Routes
 
-// AI Booking Confirmation endpoint
+// Booking Confirmation endpoint (No AI - Simple dynamic response)
 app.post('/api/ai/booking-confirmation', async (req, res) => {
   try {
     const { name, appliance, issue, email, phone } = req.body;
@@ -100,47 +99,8 @@ app.post('/api/ai/booking-confirmation', async (req, res) => {
     // Generate booking reference
     const bookingRef = 'CR-' + Math.floor(100000 + Math.random() * 900000);
 
-    // Check if API key is configured
-    if (!process.env.GEMINI_API_KEY) {
-      console.error('GEMINI_API_KEY not configured');
-      return res.status(500).json({ 
-        error: 'AI service not configured. Please contact support.' 
-      });
-    }
-
-    // Initialize Gemini AI
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
-    const prompt = `
-      You are a friendly and professional customer service agent for an appliance repair company called "Care Refrigeration".
-      A customer has just submitted a service request form. Your task is to generate a warm, reassuring, and professional confirmation message.
-
-      Customer Details:
-      - Name: ${name}
-      - Appliance: ${appliance}
-      - Issue Description: ${issue}
-
-      Instructions for the response:
-      1. Address the customer by their name.
-      2. Confirm receipt of their service request for the specified appliance.
-      3. Reassure them that a technician will be in touch shortly (within the next 2-3 business hours) to schedule a specific appointment time.
-      4. Use this booking reference number: ${bookingRef}
-      5. Keep the tone positive and professional.
-      6. Do not ask any questions.
-      7. The response should be a single paragraph.
-    `;
-
-    // Call Gemini API
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-
-    const confirmationText = response.text;
-
-    if (!confirmationText || confirmationText.trim().length === 0) {
-      throw new Error('Received empty response from AI service');
-    }
+    // Generate professional confirmation message without AI
+    const confirmationText = `Thank you, ${name}! We've received your service request for your ${appliance}. Your booking reference is ${bookingRef}. Our expert technician will contact you within the next 2-3 business hours to schedule a convenient appointment time. We appreciate your trust in Care Refrigeration and look forward to resolving your appliance issue promptly.`;
 
     // Send emails (customer + business notification)
     const emailResults = await sendBookingEmails({

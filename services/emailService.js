@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 /**
  * Email Service for Care Refrigeration
  * Handles sending booking confirmations to customers and notifications to business
+ * Uses Gmail SMTP for both local and production (Railway)
  */
 
 /**
@@ -432,7 +433,7 @@ export async function sendCustomerEmail(customerData) {
     const mailOptions = {
       from: `"Care Refrigeration" <${process.env.EMAIL_USER || 'noreply@carerefrigeration.com'}>`,
       to: email,
-      subject: `Booking Confirmation - ${bookingRef} - Care Refrigeration`,
+      subject: `Service Request Confirmed - ${bookingRef}`,
       html: generateCustomerEmailHTML(name, appliance, issue, confirmationMessage, bookingRef),
       text: confirmationMessage, // Plain text fallback
     };
@@ -479,7 +480,7 @@ export async function sendBusinessEmail(bookingData) {
     const mailOptions = {
       from: `"Care Refrigeration System" <${process.env.EMAIL_USER || 'system@carerefrigeration.com'}>`,
       to: businessEmail,
-      subject: `🔔 New Booking: ${appliance} - ${bookingRef}`,
+      subject: `� New Service Request - ${bookingRef}`,
       html: generateBusinessEmailHTML(name, appliance, issue, phone, email, bookingRef),
       text: `New booking received!\n\nReference: ${bookingRef}\nCustomer: ${name}\nAppliance: ${appliance}\nIssue: ${issue}\n${phone ? `Phone: ${phone}` : ''}\n${email ? `Email: ${email}` : ''}`,
     };

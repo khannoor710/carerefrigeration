@@ -1,13 +1,25 @@
 import { GalleryImage } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+/**
+ * Get the API base URL based on environment
+ */
+function getApiBaseUrl(): string {
+  // In development, use localhost backend
+  if (import.meta.env.DEV) {
+    return 'http://localhost:3001';
+  }
+  // In production, use same origin (Railway serves both frontend and backend)
+  return '';
+}
 
 /**
  * Get all gallery images from the server
  */
 export const getGalleryImages = async (): Promise<GalleryImage[]> => {
+  const apiUrl = `${getApiBaseUrl()}/api/gallery`;
+  
   try {
-    const response = await fetch(`${API_URL}/api/gallery`);
+    const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error('Failed to fetch gallery images');
     }
@@ -52,13 +64,15 @@ export const uploadGalleryImage = async (
   title: string,
   alt: string
 ): Promise<{ success: boolean; message: string; totalImages: number }> => {
+  const apiUrl = `${getApiBaseUrl()}/api/gallery/upload`;
+  
   try {
     const formData = new FormData();
     formData.append('image', file);
     formData.append('title', title);
     formData.append('alt', alt);
     
-    const response = await fetch(`${API_URL}/api/gallery/upload`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       body: formData,
     });
@@ -80,8 +94,10 @@ export const uploadGalleryImage = async (
  * Delete an image by index
  */
 export const deleteGalleryImage = async (index: number): Promise<{ success: boolean; message: string }> => {
+  const apiUrl = `${getApiBaseUrl()}/api/gallery/${index}`;
+  
   try {
-    const response = await fetch(`${API_URL}/api/gallery/${index}`, {
+    const response = await fetch(apiUrl, {
       method: 'DELETE',
     });
     
@@ -102,8 +118,10 @@ export const deleteGalleryImage = async (index: number): Promise<{ success: bool
  * Reset gallery to default images
  */
 export const resetGallery = async (): Promise<{ success: boolean; message: string }> => {
+  const apiUrl = `${getApiBaseUrl()}/api/gallery/reset`;
+  
   try {
-    const response = await fetch(`${API_URL}/api/gallery/reset`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
     });
     

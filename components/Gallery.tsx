@@ -9,19 +9,15 @@ const Gallery: React.FC = () => {
   useEffect(() => {
     loadImages();
     
-    // Listen for custom event when admin updates
+    // Listen for custom event when admin updates gallery
     const handleGalleryUpdate = () => {
       loadImages();
     };
     
     window.addEventListener('gallery-updated', handleGalleryUpdate as EventListener);
     
-    // Poll for updates every 10 seconds
-    const pollInterval = setInterval(loadImages, 10000);
-    
     return () => {
       window.removeEventListener('gallery-updated', handleGalleryUpdate as EventListener);
-      clearInterval(pollInterval);
     };
   }, []);
 
