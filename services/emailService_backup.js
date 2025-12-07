@@ -1,4 +1,4 @@
-import { createTransport } from 'nodemailer';
+import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
 
 /**
@@ -24,9 +24,9 @@ if (process.env.RESEND_API_KEY) {
  * Create email transporter based on environment configuration
  */
 function createTransporter() {
-  // For Gmail SMTP (recommended for local development)
+  // For Gmail SMTP (recommended for production)
   if (process.env.EMAIL_SERVICE === 'gmail') {
-    return createTransport({
+    return nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
@@ -37,7 +37,7 @@ function createTransporter() {
   
   // For custom SMTP server
   if (process.env.SMTP_HOST) {
-    return createTransport({
+    return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
@@ -510,6 +510,13 @@ export async function sendCustomerEmail(customerData) {
  * Send notification email to business owner
  */
 export async function sendBusinessEmail(bookingData) {
+  const transporter = createTransporter();
+  
+  if (!transporter) {
+    console.log('📧 Email not configured. Skipping business notification.');
+    return { success: false, message: 'Email service not configured' };
+  }
+  
   const businessEmail = process.env.BUSINESS_EMAIL;
   
   if (!businessEmail) {
@@ -519,60 +526,17 @@ export async function sendBusinessEmail(bookingData) {
   
   const { name, email, phone, appliance, issue, bookingRef } = bookingData;
   
-  // Use Resend if available (for Railway production)
-  if (resend && process.env.RESEND_API_KEY) {
-    try {
-      const { data, error } = await resend.emails.send({
-        from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
-        to: businessEmail,
-        subject: `🚨 New Service Request - ${bookingRef}`,
-        html: generateBusinessEmailHTML(name, appliance, issue, phone, email, bookingRef),
-      });
-
-      if (error) {
-        console.error('❌ Resend error:', error);
-        return {
-          success: false,
-          error: error.message,
-          message: 'Failed to send business notification'
-        };
-      }
-
-      console.log('✅ Business notification sent via Resend:', data.id);
-      return {
-        success: true,
-        messageId: data.id,
-        message: 'Notification sent to business'
-      };
-    } catch (error) {
-      console.error('❌ Error sending business email:', error);
-      return {
-        success: false,
-        error: error.message,
-        message: 'Failed to send business notification'
-      };
-    }
-  }
-  
-  // Fallback to Gmail SMTP (for local development only)
-  const transporter = createTransporter();
-  
-  if (!transporter) {
-    console.log('📧 Email not configured. Skipping business notification.');
-    return { success: false, message: 'Email service not configured' };
-  }
-  
   try {
     const mailOptions = {
       from: `"Care Refrigeration System" <${process.env.EMAIL_USER || 'system@carerefrigeration.com'}>`,
       to: businessEmail,
-      subject: `🚨 New Service Request - ${bookingRef}`,
+      subject: `� New Service Request - ${bookingRef}`,
       html: generateBusinessEmailHTML(name, appliance, issue, phone, email, bookingRef),
       text: `New booking received!\n\nReference: ${bookingRef}\nCustomer: ${name}\nAppliance: ${appliance}\nIssue: ${issue}\n${phone ? `Phone: ${phone}` : ''}\n${email ? `Email: ${email}` : ''}`,
     };
     
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Business notification sent via Gmail:', info.messageId);
+    console.log('✅ Business notification sent:', info.messageId);
     
     return { 
       success: true, 
