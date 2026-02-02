@@ -41,10 +41,10 @@ Copy these values into Railway Dashboard → Variables:
 
 ```bash
 NODE_ENV=production
-GEMINI_API_KEY=AIzaSyBKV1rpV3jkcAZOts6ZtPiyfUGzm4tFIx4
+GEMINI_API_KEY=
 EMAIL_SERVICE=gmail
 EMAIL_USER=tarik788@gmail.com
-EMAIL_PASSWORD=whwuxcfjdyzzyerq
+EMAIL_PASSWORD=
 BUSINESS_EMAIL=khannoor710@gmail.com
 ```
 

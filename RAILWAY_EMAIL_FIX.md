@@ -105,7 +105,7 @@ After fixes, your Railway variables should be:
 ```bash
 # Required
 NODE_ENV=production
-GEMINI_API_KEY=AIzaSyBKV1rpV3jkcAZOts6ZtPiyfUGzm4tFIx4
+GEMINI_API_KEY=
 
 # SendGrid Email (NEW)
 SENDGRID_API_KEY=SG.your-sendgrid-api-key
