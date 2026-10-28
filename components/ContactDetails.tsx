@@ -9,7 +9,7 @@ const ContactDetails: React.FC = () => (
         <h2 id="contact-heading" className="text-3xl md:text-4xl font-extrabold text-brand-primary-dark mt-2">
           Contact Care Refrigeration
         </h2>
-        <p className="text-slate-600 mt-3">Get in touch to discuss an appliance repair visit in Andheri West.</p>
+        <p className="text-slate-600 mt-3">Get in touch to discuss an appliance repair visit in Mumbai.</p>
       </div>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 md:p-8">

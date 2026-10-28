@@ -25,9 +25,9 @@ The booking form requires a name, a phone or email, a service area, an appliance
 
 ## Search visibility
 
-The build includes a homepage plus `/ac-repair-andheri-west/` and `/washing-machine-repair-andheri-west/`, each with its own title, description, canonical URL, service content and structured data. `public/robots.txt` and `public/sitemap.xml` are served as files. Unknown URLs return 404 and `/admin` is marked noindex.
+The build includes a homepage plus `/ac-repair-andheri-west/` and `/washing-machine-repair-andheri-west/`, each with its own title, description, canonical URL, service content and structured data. The pages target Mumbai while retaining these existing URLs for continuity. `public/robots.txt` and `public/sitemap.xml` are served as files. Unknown URLs return 404 and `/admin` is marked noindex.
 
-After deployment, verify the site in Google Search Console, submit the sitemap and inspect the three public URLs. Complete and verify the Google Business Profile separately. The pages use only the confirmed Andheri West area and existing business contact details; add exact hours, prices, warranty terms, address and a review link only after verifying them with the business owner.
+After deployment, verify the site in Google Search Console, submit the sitemap and inspect the three public URLs. Complete and verify the Google Business Profile separately. The pages use the confirmed Mumbai service area and existing business contact details.
 
 ## Checks
 

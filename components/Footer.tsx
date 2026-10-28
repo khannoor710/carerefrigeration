@@ -12,15 +12,15 @@ const Footer: React.FC = () => {
           <div>
             <Logo className="text-white text-xl mb-4" />
             <p className="text-slate-400">
-              Appliance repair enquiries in Andheri West, Mumbai. Call us to discuss your AC, washing machine, or other appliance issue.
+              Appliance repair enquiries in Mumbai. Call us to discuss your AC, washing machine, or other appliance issue.
             </p>
           </div>
           <div>
             <h3 className="text-xl font-bold text-white mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><a href="#services" className="hover:text-white transition-colors">Services</a></li>
-              <li><a href="/ac-repair-andheri-west/" className="hover:text-white transition-colors">AC Repair in Andheri West</a></li>
-              <li><a href="/washing-machine-repair-andheri-west/" className="hover:text-white transition-colors">Washing Machine Repair in Andheri West</a></li>
+              <li><a href="/ac-repair-andheri-west/" className="hover:text-white transition-colors">AC Repair in Mumbai</a></li>
+              <li><a href="/washing-machine-repair-andheri-west/" className="hover:text-white transition-colors">Washing Machine Repair in Mumbai</a></li>
               <li><a href="#amc" className="hover:text-white transition-colors">AMC</a></li>
               <li><a href="#booking" className="hover:text-white transition-colors">Book a Repair</a></li>
               <li><a href="#contact" className="hover:text-white transition-colors">Contact & Hours</a></li>

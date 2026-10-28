@@ -12,7 +12,7 @@ export const APP_CONFIG = {
     tagline: 'Fast, Reliable Appliance Repair in Mumbai',
     email: 'asadcare94@gmail.com',
     phone: '+91 9819 124 194',
-    location: 'Andheri West, Mumbai',
+    location: 'Mumbai',
   },
 
   /**
@@ -27,7 +27,7 @@ export const APP_CONFIG = {
    */
   service: {
     responseTime: '2-3 business hours',
-    serviceArea: 'Andheri West, Mumbai',
+    serviceArea: 'Mumbai',
   },
 } as const;
 
