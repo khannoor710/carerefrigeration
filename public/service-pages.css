@@ -14,16 +14,18 @@ a:focus-visible { outline: 3px solid #ea8b20; outline-offset: 4px; }
 .topline .wrap { display: flex; justify-content: space-between; gap: 16px; padding-block: 7px; }
 .topline a { text-decoration: none; }
 .topline a:hover { text-decoration: underline; }
-.top { background: #fffdf8; border-bottom: 1px solid #e9e6df; }
-.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 84px; }
+.top { position: fixed; inset: 0 0 auto; z-index: 50; background: transparent; border-bottom: 1px solid transparent; transition: background .25s, box-shadow .25s; }
+.top.scrolled { background: #fff; border-bottom-color: #e2e8f0; box-shadow: 0 4px 14px #172d5714; }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 84px; padding-block: 16px; }
 .brand { display: inline-flex; align-items: center; gap: 12px; color: #102d71; text-decoration: none; font-size: 1.2rem; font-weight: 800; letter-spacing: -.03em; white-space: nowrap; }
 .brand-mark { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 11px; color: white; background: #2148b0; box-shadow: 0 5px 14px #2148b025; }
 .brand-mark svg { width: 22px; height: 22px; }
-.nav { display: flex; align-items: center; gap: 30px; color: #44536d; font-size: .94rem; font-weight: 650; }
+.nav { display: flex; align-items: center; gap: 30px; color: #475569; font-size: .94rem; font-weight: 500; }
 .nav a { text-decoration: none; }
 .nav a:hover, .nav a[aria-current="page"] { color: #c56c0b; }
-.header-call { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 17px; border-radius: 9px; background: #2148b0; color: #fff; text-decoration: none; font-weight: 750; font-size: .9rem; white-space: nowrap; }
+.header-call { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 24px; border-radius: 9px; background: #2148b0; color: #fff; text-decoration: none; font-weight: 650; font-size: .9rem; white-space: nowrap; }
 .header-call:hover { background: #17398f; }
+.mobile-menu-button, .mobile-nav { display: none; }
 .hero { position: relative; overflow: hidden; background: radial-gradient(circle at 76% 42%, #fff3d9 0, #fffaf0 37%, #fffdf8 78%); }
 .hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(#d9c8a5 0.7px, transparent .7px); background-size: 20px 20px; opacity: .19; }
 .hero .wrap { position: relative; display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr); align-items: center; gap: 46px; padding-block: 84px 95px; }
@@ -105,8 +107,12 @@ footer a:hover { text-decoration: underline; }
   .brand { font-size: 1.04rem; }
   .brand-mark { width: 35px; height: 35px; }
   .header-call { margin-left: auto; padding: 9px 12px; font-size: .8rem; }
-  .nav { order: 3; width: 100%; justify-content: space-between; gap: 12px; padding-bottom: 3px; font-size: .82rem; }
-  .hero .wrap { grid-template-columns: 1fr; gap: 20px; padding-block: 45px 60px; }
+  .nav { display: none; }
+  .mobile-menu-button { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; margin-left: auto; border: 0; border-radius: 8px; background: transparent; color: #334155; font-size: 1.35rem; cursor: pointer; }
+  .mobile-nav { position: fixed; inset: 76px 0 auto; z-index: 49; display: none; flex-direction: column; gap: 16px; padding: 20px 24px 24px; background: #fff; box-shadow: 0 12px 20px #172d5718; }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a { color: #475569; font-weight: 600; text-decoration: none; }
+  .hero .wrap { grid-template-columns: 1fr; gap: 20px; padding-block: 108px 60px; }
   .breadcrumbs { margin-bottom: 21px; }
   .hero h1 { font-size: clamp(2.55rem, 10vw, 3.7rem); }
   .hero-art { width: min(100%, 400px); }
