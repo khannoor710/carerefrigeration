@@ -29,6 +29,7 @@ const Gallery: React.FC = () => {
       console.error('Failed to load gallery images:', error);
     } finally {
       setIsLoading(false);
+      window.requestAnimationFrame(() => window.dispatchEvent(new Event('gallery-loaded')));
     }
   };
 

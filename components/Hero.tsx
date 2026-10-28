@@ -1,4 +1,5 @@
 import React from 'react';
+import { BUSINESS } from '../config/business';
 
 const Hero: React.FC = () => {
   return (
@@ -13,7 +14,7 @@ const Hero: React.FC = () => {
           Need help with an AC that is not cooling or a washing machine that has stopped working? Tell us the issue and arrange an appliance repair visit in Andheri West.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <a href="tel:+919819124194" className="bg-brand-secondary-dark text-white font-semibold px-8 py-4 rounded-lg text-lg hover:bg-brand-secondary transition-colors">Call +91 9819 124 194</a>
+          <a href={BUSINESS.phoneHref} className="bg-brand-secondary-dark text-white font-semibold px-8 py-4 rounded-lg text-lg hover:bg-brand-secondary transition-colors">Call {BUSINESS.phoneDisplay}</a>
           <a
             href="#booking"
             className="bg-brand-primary text-white font-semibold px-8 py-4 rounded-lg text-lg hover:bg-brand-primary-dark transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -21,6 +22,9 @@ const Hero: React.FC = () => {
             Schedule a Repair
           </a>
         </div>
+        <a href={BUSINESS.whatsappHref} target="_blank" rel="noopener noreferrer" className="inline-block mt-5 text-green-800 font-semibold underline">
+          Prefer WhatsApp? Message us
+        </a>
         <div className="mt-6 flex flex-wrap justify-center gap-5 text-brand-primary-dark font-medium">
           <a href="/ac-repair-andheri-west/" className="underline">AC repair in Andheri West</a>
           <a href="/washing-machine-repair-andheri-west/" className="underline">Washing machine repair in Andheri West</a>

@@ -8,6 +8,7 @@ import BookingForm from './components/BookingForm';
 import Gallery from './components/Gallery';
 import Footer from './components/Footer';
 import Amc from './components/Amc';
+import ContactDetails from './components/ContactDetails';
 import AdminPage from './components/AdminPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
@@ -17,11 +18,9 @@ const App: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
-    // Check if URL contains /admin
     const path = window.location.pathname;
     setShowAdmin(path === '/admin' || path.includes('/admin'));
 
-    // Listen for popstate (browser back/forward)
     const handlePopState = () => {
       const currentPath = window.location.pathname;
       setShowAdmin(currentPath === '/admin' || currentPath.includes('/admin'));
@@ -31,7 +30,6 @@ const App: React.FC = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // If admin page, show only admin interface
   if (showAdmin) {
     return (
       <ErrorBoundary>
@@ -52,6 +50,7 @@ const App: React.FC = () => {
           <HowItWorks />
           <Gallery />
           <BookingForm />
+          <ContactDetails />
         </main>
         <Footer />
       </div>

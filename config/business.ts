@@ -1,0 +1,11 @@
+export const BUSINESS = {
+  name: 'Care Refrigeration',
+  phoneDisplay: '+91 9819 124 194',
+  phoneHref: 'tel:+919819124194',
+  whatsappHref: 'https://wa.me/919819124194',
+  email: 'asadcare94@gmail.com',
+  address: 'Khandesh Sadabahar Society, Gilbert Hill Rd, Dhangar Wadi, Andheri West, Mumbai, Maharashtra 400058',
+  mapHref: 'https://www.google.com/maps/search/?api=1&query=Khandesh%20Sadabahar%20Society%2C%20Gilbert%20Hill%20Rd%2C%20Dhangar%20Wadi%2C%20Andheri%20West%2C%20Mumbai%20400058',
+  weekdayHours: '10:00 am–7:00 pm',
+  sundayHours: '10:00 am–2:00 pm',
+} as const;
