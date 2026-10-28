@@ -9,7 +9,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; line-height: 1.6; }
 a { color: inherit; }
 a:focus-visible { outline: 3px solid #ea8b20; outline-offset: 4px; }
-.wrap { width: min(1160px, calc(100% - 48px)); margin-inline: auto; }
+.wrap { width: min(1280px, calc(100% - 48px)); margin-inline: auto; }
 .topline { background: #112b69; color: #e7edff; font-size: .82rem; font-weight: 600; }
 .topline .wrap { display: flex; justify-content: space-between; gap: 16px; padding-block: 7px; }
 .topline a { text-decoration: none; }
