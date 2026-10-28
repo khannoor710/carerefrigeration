@@ -12,11 +12,6 @@ export class GeminiServiceError extends Error {
  * Get the API base URL based on environment
  */
 function getApiBaseUrl(): string {
-  // In development, use localhost backend
-  if (import.meta.env.DEV) {
-    return 'http://localhost:3001';
-  }
-  // In production, use same origin (Railway serves both frontend and backend)
   return '';
 }
 
@@ -36,10 +31,11 @@ export async function generateBookingConfirmation(
   name: string,
   email: string,
   phone: string,
+  area: string,
   appliance: string,
   issue: string
 ): Promise<string> {
-  const apiUrl = `${getApiBaseUrl()}/api/ai/booking-confirmation`;
+  const apiUrl = `${getApiBaseUrl()}/api/booking`;
 
   try {
     const response = await fetch(apiUrl, {
@@ -47,7 +43,7 @@ export async function generateBookingConfirmation(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, phone, appliance, issue }),
+      body: JSON.stringify({ name, email, phone, area, appliance, issue }),
     });
 
     if (!response.ok) {

@@ -6,6 +6,7 @@ interface FormState {
   name: string;
   email: string;
   phone: string;
+  area: string;
   appliance: string;
   issue: string;
 }
@@ -15,7 +16,8 @@ export const useBookingForm = () => {
     name: '',
     email: '',
     phone: '',
-    appliance: SERVICES[0]?.title || '',
+    area: '',
+    appliance: SERVICES.find(service => service.title === 'Air Conditioner Repair')?.title || SERVICES[0]?.title || '',
     issue: '',
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -28,10 +30,14 @@ export const useBookingForm = () => {
 
   const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { name, email, phone, appliance, issue } = formState;
+    const { name, email, phone, area, appliance, issue } = formState;
 
-    if (!name || !appliance || !issue) {
+    if (!name.trim() || !area.trim() || !appliance || !issue.trim()) {
       setError('Please fill out all required fields.');
+      return;
+    }
+    if (!email.trim() && !phone.trim()) {
+      setError('Please enter a phone number or email so we can contact you.');
       return;
     }
     
@@ -46,7 +52,7 @@ export const useBookingForm = () => {
     setConfirmation('');
 
     try {
-      const result = await generateBookingConfirmation(name, email, phone, appliance, issue);
+      const result = await generateBookingConfirmation(name, email, phone, area, appliance, issue);
       setConfirmation(result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Sorry, something went wrong. Please try again later.';

@@ -1,4 +1,4 @@
-import { Service, WhyChooseUsPoint, Testimonial, AmcBenefit, GalleryImage } from './types';
+import { Service, WhyChooseUsPoint, AmcBenefit } from './types';
 import { BoltIcon } from './components/icons/BoltIcon';
 import { ShieldCheckIcon } from './components/icons/ShieldCheckIcon';
 import { CogIcon } from './components/icons/CogIcon';
@@ -56,94 +56,39 @@ export const WHY_CHOOSE_US_POINTS: WhyChooseUsPoint[] = [
   {
     icon: BoltIcon,
     title: 'Quick Response',
-    description: 'We understand the urgency. Our team is committed to providing same-day service across Mumbai.',
+    description: 'Tell us the issue and your neighbourhood. We will contact you to discuss visit availability.',
   },
   {
     icon: ShieldCheckIcon,
     title: 'Expert Technicians',
-    description: 'Our technicians are certified, experienced, and trained to handle all major appliance brands.',
+    description: 'We handle enquiries for ACs, washing machines, refrigerators and other home appliances.',
   },
   {
     icon: CogIcon,
-    title: 'Genuine Parts',
-    description: 'We use only genuine, high-quality spare parts to ensure the longevity of your appliances.',
+    title: 'Clear Repair Discussion',
+    description: 'Ask about the diagnosis, parts, charges and any applicable warranty before approving work.',
   },
 ];
 
 export const AMC_BENEFITS: AmcBenefit[] = [
     {
         icon: PiggyBankIcon,
-        title: 'Save Money',
-        description: 'Enjoy discounted rates on services and spare parts, avoiding costly unexpected repairs with regular check-ups.'
+        title: 'Discuss Maintenance',
+        description: 'Ask whether planned maintenance is suitable for your appliance and usage.'
     },
     {
         icon: StarIcon,
-        title: 'Priority Service',
-        description: 'As an AMC customer, your service requests are prioritized, ensuring you get the fastest possible response time.'
+        title: 'Understand the Plan',
+        description: 'Check the covered work, visit schedule and charges before choosing a plan.'
     },
     {
         icon: HeartIcon,
-        title: 'Longer Lifespan',
-        description: 'Regular maintenance helps in the early detection of issues, extending the life and efficiency of your appliances.'
+        title: 'Regular Checks',
+        description: 'Maintenance visits can help identify issues before they disrupt use.'
     },
     {
         icon: CalendarIcon,
-        title: 'Peace of Mind',
-        description: 'With scheduled maintenance and our expert team on call, you can relax knowing your appliances are in good hands.'
+        title: 'Ask Questions',
+        description: 'Discuss the plan terms and any applicable warranty with our team.'
     }
-];
-
-export const TESTIMONIALS: Testimonial[] = [
-  {
-    quote: 'Care Refrigeration was a lifesaver! My AC broke down during a heatwave, and they had it fixed within hours of my call. Professional, fast, and reasonably priced.',
-    name: 'Priya Sharma',
-    location: 'Andheri, Mumbai',
-    avatarUrl: 'https://i.pravatar.cc/150?img=1',
-  },
-  {
-    quote: 'The technician was very knowledgeable and quickly diagnosed the issue with my washing machine. He explained the problem clearly and fixed it on the spot. Highly recommend!',
-    name: 'Rohan Mehta',
-    location: 'Bandra, Mumbai',
-    avatarUrl: 'https://i.pravatar.cc/150?img=3',
-  },
-  {
-    quote: 'I\'ve used their service for both my fridge and microwave. Each time, the experience has been excellent. Punctual, polite, and they get the job done right the first time.',
-    name: 'Anjali Desai',
-    location: 'Juhu, Mumbai',
-    avatarUrl: 'https://i.pravatar.cc/150?img=8',
-  },
-];
-
-
-export const GALLERY_IMAGES: GalleryImage[] = [
-  {
-    src: 'https://images.pexels.com/photos/8111353/pexels-photo-8111353.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    title: 'AC Unit Servicing',
-    alt: 'Technician servicing an air conditioner unit on a wall.'
-  },
-  {
-    src: 'https://images.pexels.com/photos/713297/pexels-photo-713297.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    title: 'Refrigerator Diagnostics',
-    alt: 'Close-up of a technician examining the back of a refrigerator.'
-  },
-  {
-    src: 'https://images.pexels.com/photos/5591662/pexels-photo-5591662.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    title: 'Washing Machine Repair',
-    alt: 'Technician with a toolbox repairing a washing machine.'
-  },
-  {
-    src: 'https://images.pexels.com/photos/8474810/pexels-photo-8474810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    title: 'Microwave Inspection',
-    alt: 'Engineer inspecting the internal components of a microwave oven.'
-  },
-  {
-    src: 'https://images.pexels.com/photos/8961341/pexels-photo-8961341.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    title: 'Geyser Installation',
-    alt: 'Plumber installing a new water heater geyser in a bathroom.'
-  },
-  {
-    src: 'https://images.pexels.com/photos/8463510/pexels-photo-8463510.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    title: 'RO Filter Replacement',
-    alt: 'Technician replacing the filters on an RO water purifier system.'
-  }
 ];

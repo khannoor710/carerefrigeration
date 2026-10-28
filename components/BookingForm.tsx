@@ -42,7 +42,7 @@ const BookingForm: React.FC = () => {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                  Email Address <span className="text-slate-400">(Optional - for confirmation email)</span>
+                  Email Address <span className="text-slate-400">(Enter phone or email)</span>
                 </label>
                 <input
                   type="email"
@@ -56,15 +56,32 @@ const BookingForm: React.FC = () => {
 
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-slate-700">
-                  Phone Number <span className="text-slate-400">(Optional)</span>
+                  Phone Number <span className="text-slate-400">(Enter phone or email)</span>
                 </label>
                 <input
                   type="tel"
                   id="phone"
+                  autoComplete="tel"
                   value={formState.phone}
                   onChange={(e) => setFormField('phone', e.target.value)}
                   className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary"
                   placeholder="+91 98765 43210"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="area" className="block text-sm font-medium text-slate-700">
+                  Service area or neighbourhood <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="area"
+                  required
+                  maxLength={160}
+                  value={formState.area}
+                  onChange={(e) => setFormField('area', e.target.value)}
+                  className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary"
+                  placeholder="e.g. Andheri West, Mumbai"
                 />
               </div>
 
@@ -92,6 +109,8 @@ const BookingForm: React.FC = () => {
                   id="issue"
                   rows={4}
                   required
+                  minLength={10}
+                  maxLength={1000}
                   value={formState.issue}
                   onChange={(e) => setFormField('issue', e.target.value)}
                   className="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary"
@@ -107,7 +126,7 @@ const BookingForm: React.FC = () => {
                   disabled={isLoading}
                   className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-semibold text-white bg-brand-primary hover:bg-brand-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-secondary disabled:bg-slate-400 disabled:cursor-not-allowed transition-all"
                 >
-                  {isLoading ? 'Generating Confirmation...' : 'Request Service'}
+                  {isLoading ? 'Sending request...' : 'Request Service'}
                 </button>
               </div>
             </form>
@@ -115,6 +134,7 @@ const BookingForm: React.FC = () => {
             <div className="text-center">
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Thank You!</h3>
               <p className="text-slate-600 whitespace-pre-wrap">{confirmation}</p>
+              <a href="tel:+919819124194" className="inline-block mt-5 text-brand-primary font-semibold underline">Need help sooner? Call us</a>
             </div>
           )}
         </div>

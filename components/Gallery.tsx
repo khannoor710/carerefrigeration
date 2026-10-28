@@ -36,9 +36,9 @@ const Gallery: React.FC = () => {
     <section id="gallery" className="py-24 bg-slate-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Our Work in Action</h2>
+          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Appliance Service Gallery</h2>
           <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
-            A glimpse into the quality and care we put into every repair.
+            Illustrative service images. Contact us to discuss the specific work your appliance needs.
           </p>
         </div>
         {isLoading ? (
@@ -48,12 +48,14 @@ const Gallery: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {images.map((image, index) => (
+            {images.slice(0, 6).map((image, index) => (
               <div key={index} className="group relative overflow-hidden rounded-lg shadow-lg">
                 <div className="relative w-full" style={{ paddingTop: '100%' }}> {/* 1:1 Aspect Ratio */}
                   <img
                     src={image.src}
                     alt={image.alt}
+                    loading="lazy"
+                    decoding="async"
                     className="absolute top-0 left-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500 ease-in-out"
                   />
                 </div>

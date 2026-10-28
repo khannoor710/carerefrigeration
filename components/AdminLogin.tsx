@@ -1,25 +1,20 @@
 import { useState, FormEvent } from 'react';
-import { useAuth } from '../hooks/useAuth';
-
 interface AdminLoginProps {
-  onLoginSuccess: () => void;
+  onLogin: (username: string, password: string) => Promise<void>;
 }
 
-const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
+const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
-    const success = login(username, password);
-    if (success) {
-      onLoginSuccess();
-    } else {
-      setError('Invalid username or password');
+    try {
+      await onLogin(username, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to sign in');
       setPassword('');
     }
   };
@@ -85,9 +80,6 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           </div>
         </form>
         
-        <div className="mt-4 text-center text-xs text-slate-500">
-          <p>Default credentials: admin / CareRefrig2024!</p>
-        </div>
       </div>
     </div>
   );

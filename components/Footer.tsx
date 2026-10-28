@@ -1,6 +1,4 @@
 import React from 'react';
-import { FacebookIcon } from './icons/FacebookIcon';
-import { TwitterIcon } from './icons/TwitterIcon';
 import { PhoneIcon } from './icons/PhoneIcon';
 import { EnvelopeIcon } from './icons/EnvelopeIcon';
 import Logo from './Logo';
@@ -13,13 +11,15 @@ const Footer: React.FC = () => {
           <div>
             <Logo className="text-white text-xl mb-4" />
             <p className="text-slate-400">
-              Your trusted partner for home appliance repairs in Mumbai. Fast, reliable, and professional service guaranteed.
+              Appliance repair enquiries in Andheri West, Mumbai. Call us to discuss your AC, washing machine, or other appliance issue.
             </p>
           </div>
           <div>
             <h3 className="text-xl font-bold text-white mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><a href="#services" className="hover:text-white transition-colors">Services</a></li>
+              <li><a href="/ac-repair-andheri-west/" className="hover:text-white transition-colors">AC Repair in Andheri West</a></li>
+              <li><a href="/washing-machine-repair-andheri-west/" className="hover:text-white transition-colors">Washing Machine Repair in Andheri West</a></li>
               <li><a href="#amc" className="hover:text-white transition-colors">AMC</a></li>
               <li><a href="#booking" className="hover:text-white transition-colors">Book a Repair</a></li>
             </ul>
@@ -29,21 +29,14 @@ const Footer: React.FC = () => {
             <ul className="space-y-3 text-slate-400">
               <li className="flex items-center">
                 <PhoneIcon className="h-5 w-5 mr-3 text-brand-secondary" />
-                <span>+91 9819 124 194</span>
+                <a href="tel:+919819124194" className="hover:text-white underline">+91 9819 124 194</a>
               </li>
               <li className="flex items-center">
                 <EnvelopeIcon className="h-5 w-5 mr-3 text-brand-secondary" />
-                <span>asadcare94@gmail.com</span>
+                <a href="mailto:asadcare94@gmail.com" className="hover:text-white underline">asadcare94@gmail.com</a>
               </li>
             </ul>
-            <div className="flex space-x-4 mt-6">
-              <a href="#" className="text-slate-400 hover:text-white transition-colors" aria-label="Facebook">
-                <FacebookIcon className="h-6 w-6" />
-              </a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors" aria-label="Twitter">
-                <TwitterIcon className="h-6 w-6" />
-              </a>
-            </div>
+            <p className="mt-4 text-slate-400">Service area: Andheri West, Mumbai</p>
           </div>
         </div>
         <div className="mt-12 border-t border-slate-700 pt-8 text-center text-slate-500">

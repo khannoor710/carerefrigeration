@@ -1,5 +1,4 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { useAuth } from '../hooks/useAuth';
 import { GalleryImage } from '../types';
 import {
   getGalleryImages,
@@ -8,8 +7,7 @@ import {
   resetGallery,
 } from '../services/galleryService';
 
-const AdminGalleryManager: React.FC = () => {
-  const { logout } = useAuth();
+const AdminGalleryManager: React.FC<{ onLogout: () => Promise<void> }> = ({ onLogout }) => {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
@@ -133,7 +131,7 @@ const AdminGalleryManager: React.FC = () => {
               <p className="mt-1 text-sm text-slate-600">Upload and manage gallery images</p>
             </div>
             <button
-              onClick={logout}
+              onClick={onLogout}
               className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all"
             >
               Logout

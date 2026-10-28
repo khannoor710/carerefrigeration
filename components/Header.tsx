@@ -5,11 +5,9 @@ import Logo from './Logo';
 
 const NAV_LINKS: NavLink[] = [
   { href: '#home', label: 'Home' },
+  { href: '/ac-repair-andheri-west/', label: 'AC Repair' },
+  { href: '/washing-machine-repair-andheri-west/', label: 'Washing Machine' },
   { href: '#services', label: 'Services' },
-  { href: '#why-us', label: 'Why Us' },
-  { href: '#amc', label: 'AMC' },
-  { href: '#gallery', label: 'Gallery' },
-  { href: '#testimonials', label: 'Testimonials' },
 ];
 
 const Header: React.FC = () => {
@@ -31,8 +29,8 @@ const Header: React.FC = () => {
               </a>
             ))}
           </nav>
-          <a href="#booking" className="hidden md:inline-block bg-brand-primary text-white font-semibold px-6 py-2 rounded-lg hover:bg-brand-primary-dark transition-all">
-            Book Now
+          <a href="tel:+919819124194" className="hidden md:inline-block bg-brand-primary text-white font-semibold px-6 py-2 rounded-lg hover:bg-brand-primary-dark transition-all">
+            Call Us
           </a>
           <div className="md:hidden">
             <button
@@ -61,8 +59,8 @@ const Header: React.FC = () => {
                 {link.label}
               </a>
             ))}
-            <a href="#booking" onClick={() => setIsOpen(false)} className="bg-brand-primary text-white font-semibold px-6 py-2 rounded-lg hover:bg-brand-primary-dark transition-all">
-                Book Now
+            <a href="tel:+919819124194" onClick={() => setIsOpen(false)} className="bg-brand-primary text-white font-semibold px-6 py-2 rounded-lg hover:bg-brand-primary-dark transition-all">
+                Call Us
             </a>
           </div>
         </nav>

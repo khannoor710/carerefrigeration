@@ -89,7 +89,7 @@ Visit: `https://your-app.railway.app`
 
 ### 3. Test Gallery
 1. Visit `https://your-app.railway.app/admin`
-2. Login: `admin` / `CareRefrig2024!`
+2. Login: `admin` / `[set via ADMIN_PASSWORD]`
 3. Upload a test image
 4. Verify it persists after redeploy
 

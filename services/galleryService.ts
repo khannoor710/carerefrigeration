@@ -4,11 +4,6 @@ import { GalleryImage } from '../types';
  * Get the API base URL based on environment
  */
 function getApiBaseUrl(): string {
-  // In development, use localhost backend
-  if (import.meta.env.DEV) {
-    return 'http://localhost:3001';
-  }
-  // In production, use same origin (Railway serves both frontend and backend)
   return '';
 }
 
@@ -25,8 +20,7 @@ export const getGalleryImages = async (): Promise<GalleryImage[]> => {
     }
     const data = await response.json();
     
-    // Return latest 6 images
-    return data.images.slice(0, 6);
+    return data.images;
   } catch (error) {
     console.error('Error loading gallery images:', error);
     

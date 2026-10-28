@@ -107,7 +107,7 @@ Should return gallery data.
 1. Visit https://your-app.railway.app/admin
 2. Login with:
    - Username: `admin`
-   - Password: `CareRefrig2024!`
+   - Password: `[set via ADMIN_PASSWORD]`
 3. Upload a test image
 4. Verify image persists after Railway restart
 

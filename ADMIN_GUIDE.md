@@ -20,7 +20,7 @@ Navigate to: `http://your-domain.com/admin` or `http://localhost:5173/admin` for
 
 ### Default Credentials
 - **Username**: `admin`
-- **Password**: `CareRefrig2024!`
+- **Password**: `[set via ADMIN_PASSWORD]`
 
 ### Session Management
 - Sessions last for **24 hours**

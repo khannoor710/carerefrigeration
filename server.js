@@ -1,11 +1,13 @@
 import express from 'express';
 import multer from 'multer';
-import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { randomUUID } from 'node:crypto';
 import { sendBookingEmails } from './services/emailService.js';
+import { adminSession, loginAdmin, logoutAdmin, requireAdmin } from './services/adminAuth.js';
+import { markBusinessEmailSent, saveBooking } from './services/bookingStore.js';
 
 // Load environment variables from .env.local
 dotenv.config({ path: '.env.local' });
@@ -14,25 +16,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.disable('x-powered-by');
+app.use(express.json({ limit: '16kb' }));
 
 // Serve static files from the Vite build (in production)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')));
 }
 
-// Serve gallery images
-app.use('/gallery', express.static(path.join(__dirname, 'public/gallery')));
-
-// Ensure gallery directory exists
-const galleryDir = path.join(__dirname, 'public/gallery');
-if (!fs.existsSync(galleryDir)) {
-  fs.mkdirSync(galleryDir, { recursive: true });
-}
+// DATA_DIR should point to a persistent volume in production.
+const dataDir = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(__dirname, 'public');
+const galleryDir = path.join(dataDir, 'gallery');
+const bundledGalleryDir = path.join(__dirname, 'public/gallery');
+const metadataPath = path.join(dataDir, 'gallery-data.json');
+fs.mkdirSync(galleryDir, { recursive: true });
+if (!fs.existsSync(metadataPath)) fs.copyFileSync(path.join(__dirname, 'public/gallery-data.json'), metadataPath);
+app.use('/gallery', express.static(galleryDir), express.static(bundledGalleryDir));
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
@@ -68,7 +71,6 @@ const upload = multer({
 
 // Get gallery metadata
 const getGalleryMetadata = () => {
-  const metadataPath = path.join(__dirname, 'public/gallery-data.json');
   if (fs.existsSync(metadataPath)) {
     const data = fs.readFileSync(metadataPath, 'utf8');
     return JSON.parse(data);
@@ -78,96 +80,60 @@ const getGalleryMetadata = () => {
 
 // Save gallery metadata
 const saveGalleryMetadata = (metadata) => {
-  const metadataPath = path.join(__dirname, 'public/gallery-data.json');
   fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
 };
 
 // API Routes
 
-// Booking Confirmation endpoint (No AI - Simple dynamic response)
-app.post('/api/ai/booking-confirmation', async (req, res) => {
+app.post('/api/admin/login', loginAdmin);
+app.get('/api/admin/session', (req, res) => res.json({ authenticated: adminSession(req) }));
+app.post('/api/admin/logout', logoutAdmin);
+
+const bookingAttempts = new Map();
+const applianceTypes = new Set([
+  'Refrigerator Repair', 'Washing Machine Repair', 'Air Conditioner Repair',
+  'Microwave Oven Repair', 'Geyser Repair', 'RO Water Purifier'
+]);
+
+app.post('/api/booking', async (req, res) => {
   try {
-    const { name, appliance, issue, email, phone } = req.body;
-
-    // Validate input
-    if (!name || !appliance || !issue) {
-      return res.status(400).json({ 
-        error: 'Missing required fields: name, appliance, and issue are required' 
-      });
+    const name = String(req.body?.name || '').trim();
+    const email = String(req.body?.email || '').trim();
+    const phone = String(req.body?.phone || '').trim();
+    const area = String(req.body?.area || '').trim();
+    const appliance = String(req.body?.appliance || '').trim();
+    const issue = String(req.body?.issue || '').trim();
+    if (name.length < 2 || name.length > 100 || area.length < 3 || area.length > 160 || issue.length < 10 || issue.length > 1000 ||
+        !applianceTypes.has(appliance) || (!email && !phone) ||
+        (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ||
+        (phone && !/^(\+91|91|0)?[6-9]\d{9}$/.test(phone.replace(/[\s()-]/g, '')))) {
+      return res.status(400).json({ error: 'Please enter a valid name, issue, service, and phone or email.' });
     }
 
-    // Generate booking reference
-    const bookingRef = 'CR-' + Math.floor(100000 + Math.random() * 900000);
+    const key = req.ip || 'unknown';
+    const attempt = bookingAttempts.get(key) || { count: 0, reset: Date.now() + 60 * 60 * 1000 };
+    if (Date.now() > attempt.reset) { attempt.count = 0; attempt.reset = Date.now() + 60 * 60 * 1000; }
+    if (attempt.count >= 5) return res.status(429).json({ error: 'Too many requests. Please call us instead.' });
+    attempt.count += 1;
+    bookingAttempts.set(key, attempt);
 
-    // Generate professional confirmation message without AI
-    const confirmationText = `Thank you, ${name}! We've received your service request for your ${appliance}. Your booking reference is ${bookingRef}. Our expert technician will contact you within the next 2-3 business hours to schedule a convenient appointment time. We appreciate your trust in Care Refrigeration and look forward to resolving your appliance issue promptly.`;
-
-    // Send emails (customer + business notification)
-    const emailResults = await sendBookingEmails({
-      name,
-      email,
-      phone,
-      appliance,
-      issue,
-      confirmationMessage: confirmationText,
-      bookingRef,
-    });
-
-    console.log('📧 Email results:', emailResults);
-
-    res.json({ 
-      success: true, 
-      confirmation: confirmationText,
-      bookingRef,
-      emailSent: {
-        customer: emailResults.customer?.success || false,
-        business: emailResults.business?.success || false,
-      }
-    });
-
-  } catch (error) {
-    console.error('Error generating booking confirmation:', error);
-    
-    // Provide fallback message
-    const { name, appliance, email, phone } = req.body;
-    const bookingRef = 'CR-' + Math.floor(100000 + Math.random() * 900000);
-    
-    const fallbackMessage = `Dear ${name},
-
-Thank you for contacting Care Refrigeration! We have received your service request for ${appliance} repair.
-
-Your booking reference is: ${bookingRef}
-
-Our technical team has been notified and will contact you within 2-3 business hours to schedule a convenient appointment time.
-
-If you need immediate assistance, please call us directly at +91 9819 124 194.
-
-Best regards,
-Care Refrigeration Team`;
-
-    // Still try to send emails even with fallback message
+    const bookingRef = `CR-${randomUUID().slice(0, 12).toUpperCase()}`;
+    const confirmationText = `Thank you, ${name}. Your ${appliance.toLowerCase()} request has been received. Reference: ${bookingRef}. We will contact you to arrange a visit.`;
+    const booking = { name, email, phone, area, appliance, issue, bookingRef, confirmationMessage: confirmationText };
     try {
-      const emailResults = await sendBookingEmails({
-        name,
-        email,
-        phone,
-        appliance,
-        issue,
-        confirmationMessage: fallbackMessage,
-        bookingRef,
-      });
-      
-      console.log('📧 Fallback email results:', emailResults);
-    } catch (emailError) {
-      console.error('Error sending fallback emails:', emailError);
+      await saveBooking(booking);
+    } catch (storageError) {
+      console.error('Booking database failed:', storageError);
     }
-
-    res.json({ 
-      success: true, 
-      confirmation: fallbackMessage,
-      bookingRef,
-      usedFallback: true 
-    });
+    const emailResults = await sendBookingEmails(booking);
+    if (!emailResults.business?.success) {
+      return res.status(503).json({ error: 'We could not confirm your request right now. Please call +91 9819 124 194.' });
+    }
+    try { await markBusinessEmailSent(bookingRef); } catch (error) { console.error('Booking email status update failed:', error); }
+    return res.json({ success: true, confirmation: confirmationText, bookingRef });
+  } catch (error) {
+    console.error('Booking request failed:', error);
+    return res.status(503).json({ error: 'We could not confirm your request right now. Please call +91 9819 124 194.' });
   }
 });
 
@@ -183,7 +149,7 @@ app.get('/api/gallery', (req, res) => {
 });
 
 // Upload new image
-app.post('/api/gallery/upload', upload.single('image'), (req, res) => {
+app.post('/api/gallery/upload', requireAdmin, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No image file provided' });
@@ -223,9 +189,10 @@ app.post('/api/gallery/upload', upload.single('image'), (req, res) => {
 });
 
 // Delete image
-app.delete('/api/gallery/:index', (req, res) => {
+app.delete('/api/gallery/:index', requireAdmin, (req, res) => {
   try {
-    const index = parseInt(req.params.index);
+    if (!/^\d+$/.test(req.params.index)) return res.status(400).json({ error: 'Invalid image index' });
+    const index = Number(req.params.index);
     const metadata = getGalleryMetadata();
     
     if (index < 0 || index >= metadata.images.length) {
@@ -258,7 +225,7 @@ app.delete('/api/gallery/:index', (req, res) => {
 });
 
 // Reset gallery to defaults
-app.post('/api/gallery/reset', (req, res) => {
+app.post('/api/gallery/reset', requireAdmin, (req, res) => {
   try {
     const metadata = getGalleryMetadata();
     
@@ -313,12 +280,14 @@ app.post('/api/gallery/reset', (req, res) => {
   }
 });
 
-// Catch-all route to serve index.html for client-side routing (must be last)
 if (process.env.NODE_ENV === 'production') {
-  app.get(/^\/(?!api|gallery).*/, (req, res) => {
+  app.get('/admin', (req, res) => {
+    res.set('X-Robots-Tag', 'noindex, nofollow');
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
+
+app.use((req, res) => res.status(404).send('Not found'));
 
 // Start server
 app.listen(PORT, () => {

@@ -1,213 +1,37 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Care Refrigeration website
 
-# Care Refrigeration - Appliance Repair Service
+React/Vite homepage, static service pages, and an Express API for booking requests and gallery management.
 
-A modern, professional website for an appliance repair business in Mumbai. Built with React, TypeScript, Vite, and Tailwind CSS, featuring AI-powered booking confirmations using Google's Gemini API.
+## Local development
 
-## ✨ Features
+1. Install dependencies: `npm ci`
+2. Copy `.env.local.example` to `.env.local` and supply the email and admin settings you intend to use for testing.
+3. Start both processes: `npm run dev:all`
+4. Open `http://localhost:5173`.
 
-- 🎨 **Modern UI**: Beautiful, responsive design with Tailwind CSS
-- ⚡ **Fast Performance**: Built with Vite for lightning-fast development and builds
-- 🤖 **AI-Powered**: Gemini AI generates personalized booking confirmations
-- 📱 **Fully Responsive**: Optimized for mobile, tablet, and desktop
-- ♿ **Accessible**: WCAG AA compliant with proper ARIA labels
-- 🔒 **Type-Safe**: Full TypeScript support with strict mode
-- 🛡️ **Error Handling**: Global error boundary and graceful degradation
-- 🎯 **SEO Friendly**: Semantic HTML and proper meta tags
-- 🖼️ **Admin Gallery Management**: Upload and manage gallery images dynamically
-- 🔐 **Secure Admin Portal**: Protected admin access for gallery updates
+The Vite dev server proxies `/api` and `/gallery` to the Express server on port 3001. Run `npm run build` to compile the production site. Run `npm run type-check` for TypeScript validation.
 
-## 🚀 Getting Started
+## Production configuration
 
-### Prerequisites
+Set these variables in the deployment environment:
 
-- **Node.js** 18+ (recommended: 20 LTS)
-- **npm** 8+
+- `NODE_ENV=production`
+- `ADMIN_USERNAME` and a unique, strong `ADMIN_PASSWORD` for gallery management. The admin page is disabled until both are configured. Do not reuse the old password that appeared in the public repository.
+- `RESEND_API_KEY`, `EMAIL_FROM` (a sender allowed by your email provider), and `BUSINESS_EMAIL` (the inbox that receives booking requests).
+- `DATABASE_URL` to save booking requests in PostgreSQL. The app creates its `bookings` table on first use. Without a database, a request is accepted only when the business email succeeds; no durable booking record is kept.
+- `DATA_DIR` pointing to a persistent mounted directory for gallery uploads and metadata. Without a persistent volume, uploaded photos can disappear after a redeploy.
 
-### Installation
+The booking form requires a name, a phone or email, a service area, an appliance type, and an issue description. It shows success only after the business notification is delivered. Gallery changes require a server-side admin session. Existing client-side admin sessions are no longer valid.
 
-1. **Clone the repository** (or download the source)
-   ```bash
-   git clone <repository-url>
-   cd care-refrigeration-appliance-repair
-   ```
+## Search visibility
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+The build includes a homepage plus `/ac-repair-andheri-west/` and `/washing-machine-repair-andheri-west/`, each with its own title, description, canonical URL, service content and structured data. `public/robots.txt` and `public/sitemap.xml` are served as files. Unknown URLs return 404 and `/admin` is marked noindex.
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.local.example .env.local
-   ```
-   Edit `.env.local` and add your Gemini API key:
-   ```
-   GEMINI_API_KEY=your_api_key_here
-   ADMIN_USERNAME=admin
-   ADMIN_PASSWORD=your_secure_password
-   PORT=3001
-   ```
-   Get your API key from: https://ai.google.dev/
+After deployment, verify the site in Google Search Console, submit the sitemap and inspect the three public URLs. Complete and verify the Google Business Profile separately. The pages use only the confirmed Andheri West area and existing business contact details; add exact hours, prices, warranty terms, address and a review link only after verifying them with the business owner.
 
-4. **Run the application**
-   
-   **Option A: Run both frontend and backend together** (Recommended)
-   ```bash
-   npm run dev:all
-   ```
-   
-   **Option B: Run separately**
-   
-   Terminal 1 - Backend server:
-   ```bash
-   npm run server
-   ```
-   
-   Terminal 2 - Frontend:
-   ```bash
-   npm run dev
-   ```
+## Checks
 
-5. **Open your browser**
-   - Main site: http://localhost:5173
-   - Admin panel: http://localhost:5173/admin
-
-4. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-   Navigate to `http://localhost:5173`
-
-## 🔐 Admin Gallery Management
-
-Access the admin portal to manage gallery images:
-
-1. **Navigate to Admin Page**
-   ```
-   http://localhost:5173/admin
-   ```
-
-2. **Login Credentials**
-   - **Username**: `admin`
-   - **Password**: `CareRefrig2024!`
-   
-   ⚠️ **IMPORTANT**: Change these credentials in production by setting environment variables:
-   ```
-   ADMIN_USERNAME=your_username
-   ADMIN_PASSWORD=your_secure_password
-   ```
-
-3. **Upload Images**
-   - Maximum file size: 5MB
-   - Supported formats: JPG, PNG, WebP, GIF
-   - Images are stored in browser localStorage
-   - New images replace the oldest ones (max 6 images)
-
-4. **Features**
-   - ✅ Upload new images with title and alt text
-   - ✅ Preview before uploading
-   - ✅ Delete individual images
-   - ✅ Reset to default images
-   - ✅ Real-time gallery updates
-   - ✅ 24-hour session persistence
-
-## 📦 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production (includes TypeScript compilation)
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint errors
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
-- `npm run type-check` - Run TypeScript type checking
-
-## 🏗️ Project Structure
-
-```
-care-refrigeration-appliance-repair/
-├── components/          # React components
-│   ├── icons/          # SVG icon components
-│   ├── Header.tsx      # Navigation header
-│   ├── Hero.tsx        # Hero section
-│   ├── Services.tsx    # Services showcase
-│   ├── BookingForm.tsx # AI-powered booking form
-│   ├── ErrorBoundary.tsx # Error handling
-│   └── ...
-├── hooks/              # Custom React hooks
-│   ├── useBookingForm.ts
-│   ├── useHeaderState.ts
-│   └── useSmoothScroll.ts
-├── services/           # External services
-│   └── geminiService.ts # Gemini AI integration
-├── utils/              # Utility functions
-│   └── validation.ts   # Input validation
-├── config/             # Configuration
-│   └── app.config.ts   # App settings
-├── types.ts            # TypeScript type definitions
-├── constants.ts        # Application constants
-├── App.tsx             # Root component
-└── index.tsx           # Entry point
-```
-
-## 🎨 Tech Stack
-
-- **Framework**: React 19
-- **Build Tool**: Vite 6
-- **Language**: TypeScript 5.8
-- **Styling**: Tailwind CSS 3
-- **AI**: Google Gemini API
-- **Code Quality**: ESLint + Prettier
-- **Type Checking**: TypeScript Strict Mode
-
-## 🔐 Security
-
-- ✅ Environment variables for sensitive data
-- ✅ Input sanitization and validation
-- ✅ TypeScript strict mode for type safety
-- ✅ No hardcoded credentials
-- ✅ HTTPS-only API calls
-
-## ♿ Accessibility
-
-- ✅ Semantic HTML5 elements
-- ✅ ARIA labels and roles
-- ✅ Keyboard navigation support
-- ✅ Screen reader friendly
-- ✅ WCAG AA color contrast ratios
-
-## 📊 Performance
-
-- ✅ Component memoization with `React.memo()`
-- ✅ Lazy loading for heavy components
-- ✅ Optimized bundle size
-- ✅ Fast Vite HMR
-- ✅ Production-ready builds
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## 📝 License
-
-This project is private and proprietary.
-
-## 📧 Contact
-
-- **Email**: asadcare94@gmail.com
-- **Phone**: +91 9819 124 194
-- **Location**: Mumbai, India
-
-## 🔗 Links
-
-- **AI Studio**: https://ai.studio/apps/drive/1dX_oMIC64fdDHdkHKM_kyf-hOa2AhBhA
-- **Gemini API Docs**: https://ai.google.dev/
-
----
-
-Made with ❤️ for Care Refrigeration
+- `npm run build`
+- `npm test`
+- Verify the live booking notification reaches `BUSINESS_EMAIL` before sending customers to the form.
+- Verify the sitemap, robots file, both service pages and the admin route after deployment.

@@ -394,7 +394,7 @@ npm run dev
 
 - **Main Website**: http://localhost:5173
 - **Admin Panel**: http://localhost:5173/admin
-- **Default Login**: admin / CareRefrig2024! (change in `.env.local`)
+- **Default Login**: admin / [set via ADMIN_PASSWORD] (change in `.env.local`)
 
 ## 🌐 Production Deployment
 

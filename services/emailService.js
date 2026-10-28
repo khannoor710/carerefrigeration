@@ -1,6 +1,10 @@
 import { createTransport } from 'nodemailer';
 import { Resend } from 'resend';
 
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[char]));
+
 /**
  * Email Service for Care Refrigeration
  * Handles sending booking confirmations to customers and notifications to business
@@ -9,16 +13,8 @@ import { Resend } from 'resend';
  * - Gmail SMTP (for local development only)
  */
 
-// Initialize Resend if API key is available
-let resend = null;
-if (process.env.RESEND_API_KEY) {
-  resend = new Resend(process.env.RESEND_API_KEY);
-  console.log('📧 Email service: Resend API (Railway-compatible)');
-} else if (process.env.EMAIL_SERVICE === 'gmail') {
-  console.log('📧 Email service: Gmail SMTP (Local only)');
-} else {
-  console.warn('⚠️  No email service configured');
-}
+// Read configuration when sending, after the server has loaded .env.local.
+const getResend = () => process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 /**
  * Create email transporter based on environment configuration
@@ -202,8 +198,8 @@ function generateCustomerEmailHTML(name, appliance, issue, confirmationMessage, 
           <div class="contact-info">
             <h4>📞 Need Immediate Assistance?</h4>
             <p><strong>Phone:</strong> +91 9819 124 194</p>
-            <p><strong>Email:</strong> info@carerefrigeration.com</p>
-            <p><strong>Address:</strong> Mumbai, Maharashtra, India</p>
+            <p><strong>Email:</strong> asadcare94@gmail.com</p>
+            <p><strong>Service area:</strong> Andheri West, Mumbai</p>
           </div>
           
           <p style="margin-top: 30px; color: #666; font-size: 14px;">
@@ -217,7 +213,7 @@ function generateCustomerEmailHTML(name, appliance, issue, confirmationMessage, 
           <p>Thank you for choosing Care Refrigeration!</p>
           <p>
             <a href="tel:+919819124194">Call Us</a> | 
-            <a href="mailto:info@carerefrigeration.com">Email Us</a>
+            <a href="mailto:asadcare94@gmail.com">Email Us</a>
           </p>
           <p style="margin-top: 15px; font-size: 12px; color: #999;">
             This is an automated confirmation email. Please do not reply to this email.
@@ -232,7 +228,7 @@ function generateCustomerEmailHTML(name, appliance, issue, confirmationMessage, 
 /**
  * Generate HTML email template for business notification
  */
-function generateBusinessEmailHTML(name, appliance, issue, phone, email, bookingRef) {
+function generateBusinessEmailHTML(name, appliance, issue, phone, email, area, bookingRef) {
   return `
     <!DOCTYPE html>
     <html>
@@ -393,6 +389,10 @@ function generateBusinessEmailHTML(name, appliance, issue, phone, email, booking
               <span class="detail-value">${appliance}</span>
             </div>
             <div class="detail-row">
+              <span class="detail-label">Service area:</span>
+              <span class="detail-value">${area}</span>
+            </div>
+            <div class="detail-row">
               <span class="detail-label">Issue Description:</span>
               <span class="detail-value">${issue}</span>
             </div>
@@ -430,6 +430,7 @@ function generateBusinessEmailHTML(name, appliance, issue, phone, email, booking
  */
 export async function sendCustomerEmail(customerData) {
   const { name, email, appliance, issue, confirmationMessage, bookingRef } = customerData;
+  const resend = getResend();
   
   if (!email) {
     console.log('⚠️  No customer email provided. Skipping customer email.');
@@ -443,7 +444,7 @@ export async function sendCustomerEmail(customerData) {
         from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
         to: email,
         subject: `Service Request Confirmed - ${bookingRef}`,
-        html: generateCustomerEmailHTML(name, appliance, issue, confirmationMessage, bookingRef),
+        html: generateCustomerEmailHTML(...[name, appliance, issue, confirmationMessage, bookingRef].map(escapeHtml)),
       });
 
       if (error) {
@@ -484,7 +485,7 @@ export async function sendCustomerEmail(customerData) {
       from: `"Care Refrigeration" <${process.env.EMAIL_USER || 'noreply@carerefrigeration.com'}>`,
       to: email,
       subject: `Service Request Confirmed - ${bookingRef}`,
-      html: generateCustomerEmailHTML(name, appliance, issue, confirmationMessage, bookingRef),
+      html: generateCustomerEmailHTML(...[name, appliance, issue, confirmationMessage, bookingRef].map(escapeHtml)),
       text: confirmationMessage, // Plain text fallback
     };
     
@@ -510,6 +511,7 @@ export async function sendCustomerEmail(customerData) {
  * Send notification email to business owner
  */
 export async function sendBusinessEmail(bookingData) {
+  const resend = getResend();
   const businessEmail = process.env.BUSINESS_EMAIL;
   
   if (!businessEmail) {
@@ -517,7 +519,7 @@ export async function sendBusinessEmail(bookingData) {
     return { success: false, message: 'Business email not configured' };
   }
   
-  const { name, email, phone, appliance, issue, bookingRef } = bookingData;
+  const { name, email, phone, area, appliance, issue, bookingRef } = bookingData;
   
   // Use Resend if available (for Railway production)
   if (resend && process.env.RESEND_API_KEY) {
@@ -526,7 +528,7 @@ export async function sendBusinessEmail(bookingData) {
         from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
         to: businessEmail,
         subject: `🚨 New Service Request - ${bookingRef}`,
-        html: generateBusinessEmailHTML(name, appliance, issue, phone, email, bookingRef),
+        html: generateBusinessEmailHTML(...[name, appliance, issue, phone, email, area, bookingRef].map(escapeHtml)),
       });
 
       if (error) {
@@ -567,8 +569,8 @@ export async function sendBusinessEmail(bookingData) {
       from: `"Care Refrigeration System" <${process.env.EMAIL_USER || 'system@carerefrigeration.com'}>`,
       to: businessEmail,
       subject: `🚨 New Service Request - ${bookingRef}`,
-      html: generateBusinessEmailHTML(name, appliance, issue, phone, email, bookingRef),
-      text: `New booking received!\n\nReference: ${bookingRef}\nCustomer: ${name}\nAppliance: ${appliance}\nIssue: ${issue}\n${phone ? `Phone: ${phone}` : ''}\n${email ? `Email: ${email}` : ''}`,
+      html: generateBusinessEmailHTML(...[name, appliance, issue, phone, email, area, bookingRef].map(escapeHtml)),
+      text: `New booking received!\n\nReference: ${bookingRef}\nCustomer: ${name}\nArea: ${area}\nAppliance: ${appliance}\nIssue: ${issue}\n${phone ? `Phone: ${phone}` : ''}\n${email ? `Email: ${email}` : ''}`,
     };
     
     const info = await transporter.sendMail(mailOptions);
@@ -598,8 +600,9 @@ export async function sendBookingEmails(bookingData) {
     business: null,
   };
   
-  // Send customer email
-  if (bookingData.email) {
+  // Notify the business first; do not confirm a request the business never received.
+  results.business = await sendBusinessEmail(bookingData);
+  if (results.business.success && bookingData.email) {
     results.customer = await sendCustomerEmail({
       name: bookingData.name,
       email: bookingData.email,
@@ -609,9 +612,6 @@ export async function sendBookingEmails(bookingData) {
       bookingRef: bookingData.bookingRef,
     });
   }
-  
-  // Send business notification
-  results.business = await sendBusinessEmail(bookingData);
   
   return results;
 }

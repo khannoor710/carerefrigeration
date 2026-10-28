@@ -6,9 +6,9 @@ const Amc: React.FC = () => {
     <section id="amc" className="py-24 bg-blue-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Peace of Mind Guaranteed</h2>
+          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Ask About Appliance Maintenance</h2>
           <p className="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
-            Protect your appliances and save money with our Annual Maintenance Contract (AMC).
+            Interested in a maintenance plan? Contact us to discuss whether an annual plan is available for your appliances and what it includes.
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -27,7 +27,7 @@ const Amc: React.FC = () => {
         </div>
         <div className="mt-16 text-center">
             <a
-                href="#booking"
+                href="tel:+919819124194"
                 className="bg-brand-secondary text-brand-primary-dark font-bold px-8 py-4 rounded-lg text-lg hover:bg-brand-secondary-dark transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
                 Enquire About AMC

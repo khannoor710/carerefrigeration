@@ -31,6 +31,8 @@ const Services: React.FC = () => {
                     </li>
                   ))}
                 </ul>
+              {service.title === 'Air Conditioner Repair' && <a className="mt-6 font-semibold text-brand-primary underline" href="/ac-repair-andheri-west/">Explore AC repair in Andheri West</a>}
+              {service.title === 'Washing Machine Repair' && <a className="mt-6 font-semibold text-brand-primary underline" href="/washing-machine-repair-andheri-west/">Explore washing machine repair in Andheri West</a>}
               </div>
             );
           })}
